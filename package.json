@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/st-audrey/mvg/issues"
   },
-  "homepage": "https://github.com/st-audrey/mvg#readme"
+  "homepage": "https://github.com/st-audrey/mvg#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.5.0",
+    "mongoose": "^7.2.0"
+  }
 }
