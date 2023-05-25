@@ -1,15 +1,19 @@
 const express = require("express");
-const router = express.Router();
-
+const auth = require("../middleware/auth");
 const bookController = require("../controllers/book");
+const router = express.Router();
 
 router.get("/", bookController.getAllBooks);
 
-// // Capture et enregistre l'image, analyse le livre
-// // transformé en chaîne de caractères, et l'enregistre
-// // dans la base de données en définissant
-// // correctement son ImageUrl.
-// app.post("/api/books", (req, res, next) => {
+router.get("/:id", bookController.getBookById);
+
+router.get("/bestrating", bookController.getBookWithBestRating);
+
+// Capture et enregistre l'image, analyse le livre
+// transformé en chaîne de caractères, et l'enregistre
+// dans la base de données en définissant
+// correctement son ImageUrl.
+router.post("/", auth, bookController.createNewBook);
 //   const book = new Book({
 //     //opérateur 'spread'
 //     ...req.body,
@@ -28,5 +32,11 @@ router.get("/", bookController.getAllBooks);
 //       })
 //     );
 // });
+
+router.put("/:id", auth, bookController.updateBookById);
+
+router.delete("/:id", auth, bookController.deleteBookById);
+
+router.post("/:id/rating", auth, bookController.addBookRating);
 
 module.exports = router;
