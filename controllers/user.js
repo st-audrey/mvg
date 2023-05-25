@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
@@ -13,7 +14,12 @@ exports.login = (req, res, next) => {
             if (!valid) {
               res.status(401).json({ message: "Paire id/mdp invalide" });
             } else {
-              res.status(200).json({ userId: user._id, token: "TOKEN" });
+              res.status(200).json({
+                userId: user._id,
+                token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+                  expiresIn: "24h",
+                }),
+              });
             }
           })
           .catch((error) => {
