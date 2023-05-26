@@ -2,7 +2,7 @@ const Book = require("../models/Book");
 
 exports.getAllBooks = (req, res, next) => {
   Book.find()
-    .then((things) => res.status(200).json(things))
+    .then((books) => res.status(200).json(books))
     .catch((error) =>
       res.status(400).json({
         error,
@@ -16,7 +16,14 @@ exports.getBookById = (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 };
 
-exports.getBookWithBestRating = (req, res, next) => {};
+exports.getBooksWithBestRating = (req, res, next) => {
+  Book.aggregate([{ $sort: { averageRating: -1 } }])
+    .then((books) => {
+      booksWithBestRating = books.slice(0, 3);
+      res.status(200).json(booksWithBestRating);
+    })
+    .catch((error) => res.status(400).json({ error }));
+};
 
 exports.createNewBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
@@ -56,11 +63,9 @@ exports.updateBookById = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
-        res
-          .status(401)
-          .json({
-            message: "L'utilisateur n'est pas autorisé à faire cette action",
-          });
+        res.status(401).json({
+          message: "L'utilisateur n'est pas autorisé à faire cette action",
+        });
       } else {
         Book.updateOne(
           { _id: req.params.id },
