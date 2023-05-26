@@ -43,6 +43,12 @@ exports.createNewBook = (req, res, next) => {
 
 exports.updateBookById = (req, res, next) => {};
 
-exports.deleteBookById = (req, res, next) => {};
+exports.deleteBookById = (req, res, next) => {
+  Book.deleteOne({ _id: req.params.id })
+    .then(() =>
+      res.status(200).json({ message: "Le livre a bien été supprimé" })
+    )
+    .catch((error) => res.status(400).json({ error }));
+};
 
 exports.addBookRating = (req, res, next) => {};
