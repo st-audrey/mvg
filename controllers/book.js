@@ -49,7 +49,7 @@ exports.createNewBook = (req, res, next) => {
 };
 
 exports.updateBookById = (req, res, next) => {
-  //si l'utilisatuer fournit un fichier la modification ne sera pas la même
+  //si l'utilisateur fournit un fichier la modification ne sera pas la même
   const bookObject = req.file
     ? {
         ...JSON.parse(req.body.book),
@@ -90,4 +90,31 @@ exports.deleteBookById = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.addBookRating = (req, res, next) => {};
+exports.addBookRating = (req, res, next) => {
+  const bookId = req.params.id;
+  let bookObject;
+
+  Book.findOne({ _id: bookId })
+    .then((book) => {
+      bookObject = book;
+      if (book.userId == req.body.userId) {
+        res.status(401).json({
+          message: "L'utilisateur a déjà noté ce livre",
+        });
+      } else {
+        Book.updateOne(
+          { _id: bookId },
+          {
+            $push: {
+              ratings: { userId: req.body.userId, grade: req.body.rating },
+            },
+          }
+        )
+          .then(() => res.status(200).json(bookObject))
+          .catch((error) => res.status(401).json({ error }));
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
+};
