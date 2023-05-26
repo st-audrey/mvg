@@ -8,7 +8,7 @@ router.get("/", bookController.getAllBooks);
 router.get("/:id", bookController.getBookById);
 router.get("/bestrating", bookController.getBookWithBestRating);
 router.post("/", auth, multer, bookController.createNewBook);
-router.put("/:id", auth, bookController.updateBookById);
+router.put("/:id", auth, multer, bookController.updateBookById);
 router.delete("/:id", auth, bookController.deleteBookById);
 router.post("/:id/rating", auth, bookController.addBookRating);
 
