@@ -1,4 +1,5 @@
 const Book = require("../models/Book");
+const fs = require("fs");
 
 exports.getAllBooks = (req, res, next) => {
   Book.find()
@@ -83,11 +84,26 @@ exports.updateBookById = (req, res, next) => {
 };
 
 exports.deleteBookById = (req, res, next) => {
-  Book.deleteOne({ _id: req.params.id })
-    .then(() =>
-      res.status(200).json({ message: "Le livre a bien été supprimé" })
-    )
-    .catch((error) => res.status(400).json({ error }));
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      if (book.userId != req.auth.userId) {
+        res.status(401).json({
+          message: "L'utilisateur n'est pas autorisé à faire cette action",
+        });
+      } else {
+        const filename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${filename}`, () => {
+          Book.deleteOne({ _id: req.params.id })
+            .then(() => {
+              res.status(200).json({ message: "Le livre a bien été supprimé" });
+            })
+            .catch((error) => res.status(401).json({ error }));
+        });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
 };
 
 exports.addBookRating = (req, res, next) => {
