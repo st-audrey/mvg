@@ -1,6 +1,6 @@
 const Book = require("../models/Book");
 const fs = require("fs");
-const sharp = require("../middleware/sharp-confing");
+const sharp = require("../middleware/sharp-config");
 
 exports.getAllBooks = (req, res, next) => {
   Book.find()
