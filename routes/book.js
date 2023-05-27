@@ -2,7 +2,7 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const bookController = require("../controllers/book");
 const multer = require("../middleware/multer-config");
-const sharp = require("../middleware/sharp-confing");
+const sharp = require("../middleware/sharp-config");
 const router = express.Router();
 
 router.get("/bestrating", bookController.getBooksWithBestRating);
