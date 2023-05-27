@@ -1,5 +1,6 @@
 const Book = require("../models/Book");
 const fs = require("fs");
+const sharp = require("../middleware/sharp-confing");
 
 exports.getAllBooks = (req, res, next) => {
   Book.find()
@@ -32,13 +33,15 @@ exports.createNewBook = (req, res, next) => {
   //on supprime ici les éléments sensibles venant du client (ne jamais faire confiance)...
   delete bookObject._id;
   delete bookObject._userId;
-  //...et on récupère l'id du user via le jwt
+  let path = `${req.protocol}://${req.get("host")}/images/${
+    res.locals.filename
+  }`;
+
   const book = new Book({
     ...bookObject,
+    //...et on récupère l'id du user via le jwt
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imageUrl: path,
   });
 
   book
@@ -118,13 +121,15 @@ exports.addBookRating = (req, res, next) => {
           message: "L'utilisateur a déjà noté ce livre",
         });
       } else {
+        // updateAverageRating(bookObject, req.body.rating);
         Book.updateOne(
           { _id: bookId },
           {
             $push: {
               ratings: { userId: req.body.userId, grade: req.body.rating },
             },
-          }
+          },
+          { averageRating: updateAverageRating(bookObject, req.body.rating) }
         )
           .then(() => res.status(200).json(bookObject))
           .catch((error) => res.status(401).json({ error }));
@@ -134,3 +139,10 @@ exports.addBookRating = (req, res, next) => {
       res.status(400).json({ error });
     });
 };
+
+function updateAverageRating(book, newRating) {
+  console.log("toto");
+  const newAverageRating =
+    (book.averageRating + newRating) / book.ratings.length;
+  console.log("book.ratings.length", book.ratings.length, newAverageRating);
+}
