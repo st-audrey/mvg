@@ -58,12 +58,13 @@ exports.updateBookById = (req, res, next) => {
     ? {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
+          res.locals.filename
         }`,
       }
     : { ...req.body };
 
   delete bookObject._userId;
+
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
@@ -71,14 +72,17 @@ exports.updateBookById = (req, res, next) => {
           message: "L'utilisateur n'est pas autorisé à faire cette action",
         });
       } else {
-        Book.updateOne(
-          { _id: req.params.id },
-          { ...bookObject, _id: req.params.id }
-        )
-          .then(() =>
-            res.status(200).json({ message: "Le livre à bien été modifié" })
+        const filename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${filename}`, () => {
+          Book.updateOne(
+            { _id: req.params.id },
+            { ...bookObject, _id: req.params.id }
           )
-          .catch((error) => res.status(401).json({ error }));
+            .then(() =>
+              res.status(200).json({ message: "Le livre à bien été modifié" })
+            )
+            .catch((error) => res.status(401).json({ error }));
+        });
       }
     })
     .catch((error) => {
@@ -141,8 +145,6 @@ exports.addBookRating = (req, res, next) => {
 };
 
 function updateAverageRating(book, newRating) {
-  console.log("toto");
   const newAverageRating =
     (book.averageRating + newRating) / book.ratings.length;
-  console.log("book.ratings.length", book.ratings.length, newAverageRating);
 }

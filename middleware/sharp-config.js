@@ -11,7 +11,15 @@ module.exports = async function process(req, res, next) {
     filename = nameWithoutSpaces[0] + Date.now() + ".webp";
     const path = `../backend/images/${filename}`;
 
-    await sharp(req.file.buffer).resize(300, 300).toFormat("webp").toFile(path);
+    await sharp(req.file.buffer)
+      .resize({
+        width: 200,
+        height: 200,
+        fit: sharp.fit.contain,
+        background: { r: 242, g: 227, b: 206, alpha: 0.5 },
+      })
+      .toFormat("webp")
+      .toFile(path);
     res.locals.filename = filename;
     next();
   } else {
