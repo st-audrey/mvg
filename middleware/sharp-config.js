@@ -1,4 +1,3 @@
-const fs = require("fs");
 const sharp = require("sharp");
 
 module.exports = async function process(req, res, next) {
