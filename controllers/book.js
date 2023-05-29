@@ -136,7 +136,7 @@ exports.addBookRating = (req, res, next) => {
           { averageRating: updateAverageRating(bookObject, req.body.rating) }
         )
           .then(() => res.status(200).json(bookObject))
-          .catch((error) => res.status(401).json({ error }));
+          .catch((error) => res.status(400).json({ error }));
       }
     })
     .catch((error) => {
