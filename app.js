@@ -9,8 +9,8 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
 const cors = require("cors");
-
 const path = require("path");
+const helmet = require("helmet");
 require("dotenv").config();
 
 const swaggerOptions = {
@@ -38,6 +38,23 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
+app.use(helmet());
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        scriptSrc: ["'self'"],
+        frameSrc: ["'self'"],
+        connectSrc: ["'self'"],
+        imgSrc: ["'self'"],
+      },
+    },
+
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 app.use(cors());
 app.options("*", cors());
