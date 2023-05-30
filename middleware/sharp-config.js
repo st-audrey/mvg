@@ -12,8 +12,8 @@ module.exports = async function process(req, res, next) {
 
     await sharp(req.file.buffer)
       .resize({
-        width: 200,
-        height: 200,
+        width: 500,
+        height: 500,
         fit: sharp.fit.contain,
         background: { r: 242, g: 227, b: 206, alpha: 0.5 },
       })
