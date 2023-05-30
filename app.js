@@ -11,6 +11,7 @@ const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 
 const path = require("path");
+require("dotenv").config();
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -20,7 +21,7 @@ const swaggerOptions = {
       contact: {
         name: "Kévin",
       },
-      servers: ["http://localhost:4000"],
+      servers: [process.env.LOCAL_SERVER],
     },
   },
   apis: [`${__dirname}/routes/*.js`, "./routes/book.js", "./routes/user.js"],
@@ -29,10 +30,10 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 mongoose
-  .connect(
-    "mongodb+srv://Audrey:toto@mvgcluster.jjt696v.mongodb.net/?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(process.env.CONNECT, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
