@@ -125,7 +125,6 @@ exports.addBookRating = (req, res, next) => {
           message: "L'utilisateur a déjà noté ce livre",
         });
       } else {
-        // updateAverageRating(bookObject, req.body.rating);
         Book.updateOne(
           { _id: bookId },
           {
